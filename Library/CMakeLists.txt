@@ -1,0 +1,3 @@
+# reserved for future...
+
+#add_library(lib ${_SOURCES})

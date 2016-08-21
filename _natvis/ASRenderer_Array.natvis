@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="Geometry::Array&lt;*,*&gt;">
+		<DisplayString>{m_data._Elems}</DisplayString>
+		<Expand>
+			<ArrayItems>
+				<Size>Dimension</Size>
+				<ValuePointer>m_data._Elems</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>
