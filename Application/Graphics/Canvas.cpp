@@ -351,11 +351,11 @@ Canvas::_DrawFilledTriangle(TPoint const* ip_pt1, TPoint const* ip_pt2, TPoint c
       return;
       }
 
-    // TODO : Check this condition. Seems there something wrong. Why variable called z13, not z12? (Old code)
-    // dz12/dx12 == dz13/dx13  =>  dz12 == dz13*dx12/dx13  =>  z2 - z1 == dz13*dx12/dx13  =>  z2 == z1 + dz13*dx12/dx13
-    int const z13 = std::get<2>(*ip_pt1) + (std::get<2>(*ip_pt3) - std::get<2>(*ip_pt1))          // z2 = z1 + dz13
-      * (std::get<0>(*ip_pt2) - std::get<0>(*ip_pt1)) / (std::get<0>(*ip_pt3) - std::get<0>(*ip_pt1)); //  * dx12 / dx13
-    if(z13 >= std::get<2>(*ip_pt2)) // No sence to draw 2 another lines. This line is upper by Z
+    // Lenaer equation of line 13: (Z13<X>-z1)/(z3-z1) == (X-x1)/(x3-x1)
+    // Z13<X> == z1+dz13*(X-x1)/dx13  =>  Z13<x2> == z1+dz13*dx12/dx13
+    int const z13_x2 = std::get<2>(*ip_pt1) + (std::get<2>(*ip_pt3) - std::get<2>(*ip_pt1))
+      * (std::get<0>(*ip_pt2) - std::get<0>(*ip_pt1)) / (std::get<0>(*ip_pt3) - std::get<0>(*ip_pt1));
+    if(z13_x2 >= std::get<2>(*ip_pt2)) // No sence to draw 2 another lines. This line is upper by Z
       {
       _DrawHLine(*ip_pt1, *ip_pt3, i_color_getter);
       }
