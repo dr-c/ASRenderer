@@ -1,4 +1,6 @@
 
+#include "./Config.h"
+
 #include "./Geometry/Mesh.h"
 #include "./Geometry/Matrix.h"
 #include "./Graphics/Canvas.h"
@@ -17,32 +19,21 @@ int main(int i_argc, char** i_argv)
   using Canvas = Graphics::Canvas;
   using Image = Canvas::Image;
 
-  char const* p_filename = "C:/Users/dry/Documents/Visual Studio 2015/Projects/TinyRenderer/Sources/_input/african_head.obj";
-  char const* p_texture_filename = "C:/Users/dry/Documents/Visual Studio 2015/Projects/TinyRenderer/Sources/_input/african_head_diffuse.png";
+  std::string source_dir = PROJECT_SOURCE_DIR;
 
   int width = 1024;
   int height = 1024;
   int depth = 10000;
-  switch(i_argc)
-    {
-    case 4:
-      height = std::stoi(i_argv[3], nullptr);
-    case 3:
-      width = std::stoi(i_argv[2], nullptr);
-    case 2:
-      p_filename = i_argv[1];
-      p_texture_filename = nullptr;
-    }
 
-  Mesh mesh(p_filename);
+  auto input_filename = source_dir + "/_input/african_head.obj";
+  Mesh mesh(input_filename.c_str());
   Canvas canvas(width, height);
-  if(p_texture_filename)
-    {
-    Image texture_image;
-    texture_image.Read(p_texture_filename);
-    texture_image.FlipVertically();
-    canvas.SetTextureImage(std::move(texture_image));
-    }
+
+  auto texture_filename = source_dir + "/_input/african_head_diffuse.png";
+  Image texture_image;
+  texture_image.Read(texture_filename.c_str());
+  texture_image.FlipVertically();
+  canvas.SetTextureImage(std::move(texture_image));
 
   int const half_width = width >> 1;
   int const half_height = height >> 1;
@@ -123,7 +114,9 @@ int main(int i_argc, char** i_argv)
 
   auto& image = canvas.GetImage();
   image.FlipVertically(); // i want to have the origin at the left bottom corner of the image
-  image.Write("C:/Users/dry/Documents/Visual Studio 2015/Projects/TinyRenderer/Sources/_output/head.png");
+  auto output_filename = source_dir + "/_output/head.png";
+  image.Write(output_filename.c_str());
+
   return 0;
   }
 

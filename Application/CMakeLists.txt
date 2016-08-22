@@ -14,6 +14,8 @@ declare_sources_directory(GEOMETRY "Geometry")
 declare_sources_directory(GLOBAL "Global")
 declare_sources_directory(GRAPHICS "Graphics")
 
+include_directories("${PROJECT_BINARY_DIR}")
+
 find_package(ITK REQUIRED)
 include_directories(${ITK_INCLUDE_DIRS})
 link_directories(${ITK_LIBRARY_DIRS})

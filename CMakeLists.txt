@@ -12,3 +12,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Sub-directories where more CMakeLists.txt exist
 add_subdirectory(Library)
 add_subdirectory(Application)
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/Config.h.in"
+  "${PROJECT_BINARY_DIR}/Config.h"
+  )
