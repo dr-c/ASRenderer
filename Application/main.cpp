@@ -25,11 +25,11 @@ int main(int i_argc, char** i_argv)
   int height = 1024;
   int depth = 10000;
 
-  auto input_filename = source_dir + "/_input/african_head.obj";
+  auto input_filename = source_dir + "/_inputs/african_head.obj";
   Mesh mesh(input_filename.c_str());
   Canvas canvas(width, height);
 
-  auto texture_filename = source_dir + "/_input/african_head_diffuse.png";
+  auto texture_filename = source_dir + "/_inputs/african_head_diffuse.png";
   Image texture_image;
   texture_image.Read(texture_filename.c_str());
   texture_image.FlipVertically();
@@ -91,7 +91,7 @@ int main(int i_argc, char** i_argv)
     auto screen_v1 = world_to_screen(world_v1);
     auto screen_v2 = world_to_screen(world_v2);
 
-    //canvas.DrawFilledTriangle(screen_v0, screen_v1, screen_v2, normal_v0, normal_v1, normal_v2);
+    //canvas.DrawFilledTrianglePhong(screen_v0, screen_v1, screen_v2, normal_v0, normal_v1, normal_v2);
 
     //static auto c = 0;
     //if(++c > 10)
@@ -103,7 +103,7 @@ int main(int i_argc, char** i_argv)
     //canvas.DrawFilledTriangle(screen_v0, screen_v1, screen_v2, color);
 
     //canvas.DrawFilledTriangle(screen_v0, screen_v1, screen_v2, texture_v0, texture_v1, texture_v2, intensity);
-    canvas.DrawFilledTriangle(screen_v0, screen_v1, screen_v2, texture_v0, texture_v1, texture_v2, normal_v0, normal_v1, normal_v2);
+    canvas.DrawFilledTriangleGouraud(screen_v0, screen_v1, screen_v2, texture_v0, texture_v1, texture_v2, normal_v0, normal_v1, normal_v2);
     }
 
   auto t2 = std::chrono::high_resolution_clock::now();
@@ -114,7 +114,7 @@ int main(int i_argc, char** i_argv)
 
   auto& image = canvas.GetImage();
   image.FlipVertically(); // i want to have the origin at the left bottom corner of the image
-  auto output_filename = source_dir + "/_output/head.png";
+  auto output_filename = source_dir + "/_outputs/head.png";
   image.Write(output_filename.c_str());
 
   return 0;

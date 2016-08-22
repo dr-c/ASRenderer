@@ -194,8 +194,8 @@ Canvas::DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& 
 
 //-----------------------------------------------------------------------------
 void
-Canvas::DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
-                           Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
+Canvas::DrawFilledTriangleGouraud(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                  Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
   {
   using PointWithIntensity = std::tuple<Point::ValueType, Point::ValueType, Point::ValueType, Normal::ValueType>;
 
@@ -217,30 +217,93 @@ Canvas::DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& 
 
 //-----------------------------------------------------------------------------
 void
-Canvas::DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
-                           TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
-                           Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
+Canvas::DrawFilledTrianglePhong(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
   {
-  using PointWithTextureAndNormal = std::tuple<Point::ValueType, Point::ValueType, Point::ValueType, int, int, Normal::ValueType>;
+  using PointWithNormal = std::tuple<Point::ValueType, Point::ValueType, Point::ValueType,
+                                     Normal::ValueType, Normal::ValueType, Normal::ValueType>;
+
+  PointWithNormal pt1(std::get<0>(i_pt1), std::get<1>(i_pt1), std::get<2>(i_pt1),
+                      std::get<0>(i_n1), std::get<1>(i_n1), std::get<2>(i_n1));
+  PointWithNormal pt2(std::get<0>(i_pt2), std::get<1>(i_pt2), std::get<2>(i_pt2),
+                      std::get<0>(i_n2), std::get<1>(i_n2), std::get<2>(i_n2));
+  PointWithNormal pt3(std::get<0>(i_pt3), std::get<1>(i_pt3), std::get<2>(i_pt3),
+                      std::get<0>(i_n3), std::get<1>(i_n3), std::get<2>(i_n3));
+
+  auto f = [this](DrawHLineIterator<PointWithNormal> const& i_iter)
+    {
+    Normal normal(i_iter.Get<2>(), i_iter.Get<3>(), i_iter.Get<4>());
+    auto intensity = _GetIntensityFromNormal(normal);
+    Color color;
+    for(std::size_t i = 0; i < 3; ++i)
+      color[i] = intensity * 255;
+    return color;
+    };
+
+  _DrawFilledTriangle(&pt1, &pt2, &pt3, f);
+  }
+
+//-----------------------------------------------------------------------------
+void
+Canvas::DrawFilledTriangleGouraud(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                  TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
+                                  Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
+  {
+  using PointWithTextureAndIntensity = std::tuple<Point::ValueType, Point::ValueType, Point::ValueType, 
+    int, int, Normal::ValueType>;
+
+  PointWithTextureAndIntensity pt1(std::get<0>(i_pt1), std::get<1>(i_pt1), std::get<2>(i_pt1),
+                                static_cast<int>(std::get<0>(i_tx1) * m_texture_image.GetWidth()),
+                                static_cast<int>(std::get<1>(i_tx1) * m_texture_image.GetHeight()),
+                                _GetIntensityFromNormal(i_n1));
+  PointWithTextureAndIntensity pt2(std::get<0>(i_pt2), std::get<1>(i_pt2), std::get<2>(i_pt2),
+                                static_cast<int>(std::get<0>(i_tx2) * m_texture_image.GetWidth()),
+                                static_cast<int>(std::get<1>(i_tx2) * m_texture_image.GetHeight()),
+                                _GetIntensityFromNormal(i_n2));
+  PointWithTextureAndIntensity pt3(std::get<0>(i_pt3), std::get<1>(i_pt3), std::get<2>(i_pt3),
+                                static_cast<int>(std::get<0>(i_tx3) * m_texture_image.GetWidth()),
+                                static_cast<int>(std::get<1>(i_tx3) * m_texture_image.GetHeight()),
+                                _GetIntensityFromNormal(i_n3));
+
+  auto f = [this](DrawHLineIterator<PointWithTextureAndIntensity> const& i_iter)
+    {
+    auto texture_x = i_iter.Get<2>();
+    auto texture_y = i_iter.Get<3>();
+    auto intensity = i_iter.Get<4>();
+    return _GetColorFromTexture(texture_x, texture_y, intensity);
+    };
+
+  _DrawFilledTriangle(&pt1, &pt2, &pt3, f);
+  }
+
+//-----------------------------------------------------------------------------
+void
+Canvas::DrawFilledTrianglePhong(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
+                                Normal const& i_n1, Normal const& i_n2, Normal const& i_n3)
+  {
+  using PointWithTextureAndNormal = std::tuple<Point::ValueType, Point::ValueType, Point::ValueType, 
+    int, int, Normal::ValueType, Normal::ValueType, Normal::ValueType>;
 
   PointWithTextureAndNormal pt1(std::get<0>(i_pt1), std::get<1>(i_pt1), std::get<2>(i_pt1),
                                 static_cast<int>(std::get<0>(i_tx1) * m_texture_image.GetWidth()),
                                 static_cast<int>(std::get<1>(i_tx1) * m_texture_image.GetHeight()),
-                                _GetIntensityFromNormal(i_n1));
+                                std::get<0>(i_n1), std::get<1>(i_n1), std::get<2>(i_n1));
   PointWithTextureAndNormal pt2(std::get<0>(i_pt2), std::get<1>(i_pt2), std::get<2>(i_pt2),
                                 static_cast<int>(std::get<0>(i_tx2) * m_texture_image.GetWidth()),
                                 static_cast<int>(std::get<1>(i_tx2) * m_texture_image.GetHeight()),
-                                _GetIntensityFromNormal(i_n2));
+                                std::get<0>(i_n2), std::get<1>(i_n2), std::get<2>(i_n2));
   PointWithTextureAndNormal pt3(std::get<0>(i_pt3), std::get<1>(i_pt3), std::get<2>(i_pt3),
                                 static_cast<int>(std::get<0>(i_tx3) * m_texture_image.GetWidth()),
                                 static_cast<int>(std::get<1>(i_tx3) * m_texture_image.GetHeight()),
-                                _GetIntensityFromNormal(i_n3));
+                                std::get<0>(i_n3), std::get<1>(i_n3), std::get<2>(i_n3));
 
   auto f = [this](DrawHLineIterator<PointWithTextureAndNormal> const& i_iter)
     {
     auto texture_x = i_iter.Get<2>();
     auto texture_y = i_iter.Get<3>();
-    auto intensity = i_iter.Get<4>();
+    Normal normal(i_iter.Get<4>(), i_iter.Get<5>(), i_iter.Get<6>());
+    auto intensity = _GetIntensityFromNormal(normal);
     return _GetColorFromTexture(texture_x, texture_y, intensity);
     };
 

@@ -40,11 +40,16 @@ class Canvas
     void DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3, Color const& i_color);
     void DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
                             TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3, float i_intensity);
-    void DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
-                            Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
-    void DrawFilledTriangle(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
-                            TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
-                            Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
+    void DrawFilledTriangleGouraud(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                   Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
+    void DrawFilledTrianglePhong(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
+    void DrawFilledTriangleGouraud(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                   TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
+                                   Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
+    void DrawFilledTrianglePhong(Point const& i_pt1, Point const& i_pt2, Point const& i_pt3,
+                                 TexturePoint const& i_tx1, TexturePoint const& i_tx2, TexturePoint const& i_tx3,
+                                 Normal const& i_n1, Normal const& i_n2, Normal const& i_n3);
 
   protected:
     bool _Set(int i_x, int i_y, int i_z, Color const& i_color);
